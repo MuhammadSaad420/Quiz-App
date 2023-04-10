@@ -1,6 +1,7 @@
 package com.example.quizapp
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,8 @@ class QuizQuestionActivity : AppCompatActivity() , View.OnClickListener{
     private var mQuestionList: ArrayList<Question>? = null;
     private var mCurrentQuestion: Int = 1;
     private  var mSelectedOptionsPosition: Int = 0;
+    private var mUserName: String? = null;
+    private var mCorrectAnswers: Int = 0;
 
 
     var tvQuestion: TextView? = null;
@@ -33,7 +36,7 @@ class QuizQuestionActivity : AppCompatActivity() , View.OnClickListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz_question)
-
+        mUserName = intent.getStringExtra(Constants.USER_NAME);
         tvQuestion = findViewById(R.id.tv_question);
         ivFlag = findViewById(R.id.iv_flag);
         progressBar = findViewById(R.id.progress_bar);
@@ -121,18 +124,24 @@ class QuizQuestionActivity : AppCompatActivity() , View.OnClickListener{
                         mCurrentQuestion <= mQuestionList!!.size -> {
                             setQuestion();
                         } else -> {
-
+                            val intent = Intent(this, ResultActivity::class.java);
+                            intent.putExtra(Constants.USER_NAME, mUserName);
+                        intent.putExtra(Constants.TOTAL_QUESTION, mQuestionList?.size)
+                        intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswers);
+                        startActivity(intent);
                         }
                     }
                 } else {
                     val question = mQuestionList?.get(mCurrentQuestion-1);
                     if(question!!.correctAnswer != mSelectedOptionsPosition) {
                         answerView(mSelectedOptionsPosition, R.drawable.wrong_answer_bg)
+                    } else {
+                        mCorrectAnswers++;
                     }
                     answerView(question.correctAnswer, R.drawable.correct_answer_bg)
 
                     if(mCurrentQuestion == mQuestionList!!.size) {
-                        btnSubmit?.text = "FINISH"
+                        btnSubmit?.text = "FINISH";
                     }
                     else {
                         btnSubmit?.text = "GO TO NEXT QUESTION"
