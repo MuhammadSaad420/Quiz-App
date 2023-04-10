@@ -47,6 +47,7 @@ class QuizQuestionActivity : AppCompatActivity() , View.OnClickListener{
         tvOption2?.setOnClickListener(this)
         tvOption3?.setOnClickListener(this)
         tvOption4?.setOnClickListener(this)
+        btnSubmit?.setOnClickListener(this)
 
         setQuestion()
         setDefaultOption()
@@ -77,6 +78,7 @@ class QuizQuestionActivity : AppCompatActivity() , View.OnClickListener{
     }
 
     private fun setQuestion() {
+        setDefaultOption()
         mQuestionList = Constants.getQuestions();
         val question: Question = mQuestionList!![mCurrentQuestion - 1];
         tvQuestion?.text = question.questions;
@@ -113,7 +115,30 @@ class QuizQuestionActivity : AppCompatActivity() , View.OnClickListener{
 
             }
             R.id.btn_submit -> {
+                if(mSelectedOptionsPosition == 0) {
+                    mCurrentQuestion++
+                    when{
+                        mCurrentQuestion <= mQuestionList!!.size -> {
+                            setQuestion();
+                        } else -> {
 
+                        }
+                    }
+                } else {
+                    val question = mQuestionList?.get(mCurrentQuestion-1);
+                    if(question!!.correctAnswer != mSelectedOptionsPosition) {
+                        answerView(mSelectedOptionsPosition, R.drawable.wrong_answer_bg)
+                    }
+                    answerView(question.correctAnswer, R.drawable.correct_answer_bg)
+
+                    if(mCurrentQuestion == mQuestionList!!.size) {
+                        btnSubmit?.text = "FINISH"
+                    }
+                    else {
+                        btnSubmit?.text = "GO TO NEXT QUESTION"
+                    }
+                    mSelectedOptionsPosition = 0;
+                }
             }
         }
     }
@@ -123,5 +148,22 @@ class QuizQuestionActivity : AppCompatActivity() , View.OnClickListener{
         mSelectedOptionsPosition = optionIndex;
         view.setTypeface(view.typeface, Typeface.BOLD);
         view.background = ContextCompat.getDrawable(this,R.drawable.selected_option_bg)
+    }
+    private fun answerView(answer: Int, drawableView: Int) {
+        when(answer) {
+            1 -> {
+                tvOption1?.background = ContextCompat.getDrawable(this,drawableView);
+            }
+            2 -> {
+                tvOption2?.background = ContextCompat.getDrawable(this,drawableView)
+            }
+            3 -> {
+                tvOption3?.background = ContextCompat.getDrawable(this,drawableView)
+            }
+            4 -> {
+                tvOption4?.background = ContextCompat.getDrawable(this,drawableView)
+            }
+
+        }
     }
 }
